@@ -6,6 +6,7 @@ SHOW DATABASES;
 USE albums_db;
 
 DESCRIBE albums;
+EXPLAIN albums;
 -- Fields:
 -- id, type: INT UNSIGNED, NO NULL, Primary Key, auto_increment
 -- artist, type: varchar(240), NULL
@@ -13,6 +14,7 @@ DESCRIBE albums;
 -- release_date, type: int, NULL
 -- sales, type: float, NULL
 -- genre, type: varchar(240), NULL
+-- Takeaway:  There are multiple genres that could be associated with each album.
 
 SELECT * FROM albums;
 SELECT COUNT(*) as total_id
@@ -23,23 +25,40 @@ FROM albums;
 SELECT DISTINCT artist
 FROM albums;
 
-SELECT DISTINCT COUNT(*) as total_artists
+SELECT artist FROM albums; -- HMMMM it is actually 23...
+
+SELECT DISTINCT artist
 FROM albums;
+-- Again showing 23 artists
+
+SELECT DISTINCT COUNT(artist) as total_artists
+FROM albums; 
+
+-- WRONG
 
 -- There are 31 unique artist names in the ablums table.
 
 -- The id is the primary key for the albums table.
 
 SELECT * FROM albums;
-
+-- After running this, I ordered the release_date to oldest to most recent and found...
 -- The oldest release date is 1967.
+-- Ordered it by the most recent and found...
 -- The most recent release date is 2011.
+-- Could have used (min() function, ORDER BY, GUI sort*)
+
+SELECT max(release_date) FROM albums;
+SELECT min(release_date) FROM albums;
+SELECT min(release_date), max(release_date) FROM albums;
 
 SELECT * FROM albums WHERE artist = 'Pink Floyd';
 -- All albums by Pink Floyd are 'The Dark Side of the Moon" and "The Wall"
 
 SELECT release_date FROM albums WHERE name LIKE '%Lonely Hearts Club Band%';
 -- The year this album was released was 1967.
+-- Could also do this...
+SELECT release_date FROM albums WHERE name = "Sgt. Pepper's Lonely Hearts Club Band";
+SELECT release_date FROM albums WHERE name = 'Sgt. Pepper\'s Lonely Hearts Club Band'; -- '\' is an escape key; telling SQL to ignore the next character
 
 SELECT genre FROM albums WHERE name = 'Nevermind';
 -- The genre is Grunge, Alternative rock.
