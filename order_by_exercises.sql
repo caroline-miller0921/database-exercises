@@ -44,7 +44,7 @@ SELECT * FROM employees WHERE last_name LIKE 'E%e' ORDER BY hire_date DESC;
 -- 899 employees returned
 -- Newest employee: Teiji Eldridge
 SELECT * FROM employees WHERE last_name LIKE 'E%e' ORDER BY birth_date;
--- Oldeest employee: Piyush Erbe
+-- Oldest employee: Piyush Erbe
 
 -- Question 7 Answer:
 SELECT * FROM employees WHERE birth_date LIKE '%-12-25'
@@ -53,7 +53,7 @@ AND hire_date LIKE '199%' ORDER BY birth_date, hire_date DESC;
 -- Oldest employee who was hired last is Khun Bernini
 SELECT * FROM employees WHERE birth_date LIKE '%-12-25'
 AND hire_date LIKE '199%' ORDER BY birth_date DESC, hire_date;
--- Youngest employee who was hireed first:  Douadi Pettis
+-- Youngest employee who was hired first:  Douadi Pettis
 
 -- FIN
 
