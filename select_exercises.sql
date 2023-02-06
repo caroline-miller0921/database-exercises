@@ -3,7 +3,17 @@
 
 SHOW DATABASES;
 
+-- Exercise 2
+/*
+Create a new file called select_exercises.sql. 
+*/
+
 USE albums_db;
+
+-- Exercise 3
+/*
+Explore the structure of the albums table.
+*/
 
 DESCRIBE albums;
 EXPLAIN albums;
@@ -20,25 +30,23 @@ SELECT * FROM albums;
 SELECT COUNT(*) as total_id
 FROM albums;
 
+-- a. How many rows are in the albums table?
 -- There are 31 rows in the albums tables.
 
+-- How many unique artist names are in the albums table?
 SELECT DISTINCT artist
 FROM albums;
 
-SELECT artist FROM albums; -- HMMMM it is actually 23...
+SELECT artist FROM albums; 
 
 SELECT DISTINCT artist
 FROM albums;
--- Again showing 23 artists
+-- There are 23 unique artists
 
-SELECT DISTINCT COUNT(artist) as total_artists
-FROM albums; 
+-- c. What is the primary key for the albums table?
+-- id, type: INT UNSIGNED, NO NULL, Primary Key, auto_increment
 
--- WRONG
-
--- There are 31 unique artist names in the ablums table.
-
--- The id is the primary key for the albums table.
+-- d. What is the oldest release date for any album in the albums table? What is the most recent release date?
 
 SELECT * FROM albums;
 -- After running this, I ordered the release_date to oldest to most recent and found...
@@ -51,18 +59,27 @@ SELECT max(release_date) FROM albums;
 SELECT min(release_date) FROM albums;
 SELECT min(release_date), max(release_date) FROM albums;
 
+/*
+Exercise 4
+-- Write queries to find the following information:
+-- a. The name of all albums by Pink Floyd 
+*/
+
 SELECT * FROM albums WHERE artist = 'Pink Floyd';
 -- All albums by Pink Floyd are 'The Dark Side of the Moon" and "The Wall"
 
+-- b. The year Sgt. Pepper's Lonely Hearts Club Band was released
 SELECT release_date FROM albums WHERE name LIKE '%Lonely Hearts Club Band%';
 -- The year this album was released was 1967.
 -- Could also do this...
 SELECT release_date FROM albums WHERE name = "Sgt. Pepper's Lonely Hearts Club Band";
 SELECT release_date FROM albums WHERE name = 'Sgt. Pepper\'s Lonely Hearts Club Band'; -- '\' is an escape key; telling SQL to ignore the next character
 
+-- c. The genre for the album Nevermind
 SELECT genre FROM albums WHERE name = 'Nevermind';
 -- The genre is Grunge, Alternative rock.
 
+-- d. Which albums were released in the 1990s
 SELECT name FROM albums WHERE release_date between 1990 and 1999;
 /* The albums which were released in the 1990s are:
 Come On Over
@@ -78,6 +95,7 @@ The Immaculate Collection
 Titanic: Music from the Motion Picture
 */
 
+-- e. Which albums had less than 20 million certified sales
 SELECT name FROM albums WHERE sales < 20;
 /* The albums that had sales less than 20 million are:
 Grease: The Original Soundtrack from the Motion Picture
@@ -95,6 +113,7 @@ Nevermind
 The Wall
 */
 
+-- f. All the albums with a genre of "Rock". Why do these query results not include albums with a genre of "Hard rock" or "Progressive rock"?
 SELECT name FROM albums where genre = 'Rock';
 /* The albums under the genre of Rock include:
 Sgt. Pepper's Lonely Hearts Club Band

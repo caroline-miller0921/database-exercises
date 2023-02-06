@@ -199,3 +199,13 @@ Sales	80668
 Research	59665
 Customer Service	58770
 */
+
+/* 
+11. Bonus Find the names of all current employees, their department name, and their current manager's name.
+*/
+
+/*
+12. Bonus Who is the highest paid employee within each department.
+*/
+
+

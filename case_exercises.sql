@@ -1,6 +1,8 @@
 
 -- CASE STATEMENTS EXERCISES
 
+-- Note to self:  this exercise is complete and accurate.
+
 /*
 1. Write a query that returns all employees, their department number, their start date, their end date, and a new column 'is_current_employee' that is a 1 if the employee is still with the company and 0 if not.
 */
@@ -34,6 +36,20 @@ CASE
 END AS alpha_group
 FROM employees;	
 
+-- OR
+
+-- LEFT works like a substr but it starts from the left of the string
+select first_name, last_name, 
+	left(last_name, 1) as first_letter_of_last_name,
+	case
+		when left(last_name, 1) <= 'H' then 'A-H'
+		when substr(last_name, 1, 1) <= 'Q' then 'I-Q'
+		when left(last_name, 1) <= 'z' then 'R-Z'
+	end as alpha_group
+from employees;
+
+-- WORKS TOO! Great!
+
 /*
 3. How many employees (current or previous) were born in each decade?
 */
@@ -53,6 +69,22 @@ from employees;
 50s baby	60s baby
 182886		117138
 */
+
+-- OR
+
+SELECT
+	concat(substr(birth_date, 1, 3), '0') as decade,
+	count(*)
+from employees
+group by decade;
+
+/*
+decade		count(*)
+1950		182886
+1960		117138
+*/
+
+-- Works too!
 
 /*
 4. What is the current average salary for each of the following department groups: R&D, Sales & Marketing, Prod & QM, Finance & HR, Customer Service?
@@ -91,7 +123,6 @@ avg_current_salary		Department_Groups
 67709.26				R&D
 86368.86				Sales & Marketing
 */
-
 
 
  
