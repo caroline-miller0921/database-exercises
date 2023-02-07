@@ -50,7 +50,7 @@ order by length(last_name) desc;
 use oneil_2099;
 
 select * from cur_emp_dept;
-ALTER TABLE cur_emp_dept MODIFY COLUMN full_name varchar(30) not null;
+ALTER TABLE cur_emp_dept add full_name varchar(30) not null;
 
 describe cur_emp_dept;
 
@@ -109,8 +109,6 @@ select * from emp_full_name_dept limit 1000;
 
 /*
 2. Create a temporary table based on the payment table from the sakila database.
-
-Write the SQL necessary to transform the amount column such that it is stored as an integer representing the number of cents of the payment. For example, 1.99 should become 199.
 */
 
 use sakila;
@@ -159,5 +157,135 @@ order by month_year_purchased
 select * from oneil_2099.payment_mo_yr;
 
 describe oneil_2099.payment_mo_yr;
+
+/*
+Write the SQL necessary to transform the amount column such that it is stored as an integer representing the number of cents of the payment. For example, 1.99 should become 199.
+*/
+
+create temporary table oneil_2099.payments as
+select * from payment;
+
+use oneil_2099;
+
+select * from payments;
+
+alter table payments 
+modify amount decimal(10, 2);
+
+select * from payments;
+
+describe payments;
+
+update payments 
+set amount = amount * 100;
+
+select * from payments;
+
+alter table payments 
+modify amount int;
+
+select * from payments;
+
+/*
+3. Find out how the current average pay in each department compares to the overall current pay for everyone at the company. For this comparison, you will calculate the z-score for each salary. 
+*/
+
+use employees;
+show tables;
+select * from dept_emp limit 100;
+
+-- subquery
+select avg(salary) from salaries
+where to_date > now(); -- avg salary = 72012.2359
+
+select * from salaries limit 100;
+
+-- subquery
+select dept_name, round(avg(salary), 2) as cur_avg_pay
+from departments 
+	join dept_emp 
+		using (dept_no)
+	join salaries 
+		using (emp_no)
+where salaries.to_date > now()
+and dept_emp.to_date > now()
+group by dept_name;
+
+-- subquery
+select stddev(salary) from salaries
+where to_date > now(); -- 17309.95933634675
+	
+create temporary table oneil_2099.avg_dept_salaries as -- insert subquery for avg sal by department 
+	(
+select dept_name, round(avg(salary), 2) as cur_avg_pay
+from departments 
+	join dept_emp 
+		using (dept_no)
+	join salaries 
+		using (emp_no)
+where salaries.to_date > now()
+and dept_emp.to_date > now()
+group by dept_name
+	)
+;
+
+select * from oneil_2099.avg_dept_salaries;
+
+-- switch to Oneil DB
+use oneil_2099;
+
+alter table avg_dept_salaries
+add overall_std_salary float; -- added new column for stddev
+
+alter table avg_dept_salaries
+add overall_avg_salary float; -- added column for avg company salary
+
+select * from avg_dept_salaries;
+
+-- Adding subqueries to new columns
+update avg_dept_salaries
+set overall_avg_salary = 
+	(
+	select round(avg(salary), 2) from employees.salaries
+	where salaries.to_date > now()
+	);
+
+update avg_dept_salaries
+set overall_std_salary =
+	(
+	select round(stddev(salary), 2) from employees.salaries
+	where salaries.to_date > now()
+	);
+	
+select * from avg_dept_salaries;
+-- verified
+
+-- now to add the column to calcuate the z scores
+alter table avg_dept_salaries
+add zscore float;
+
+update avg_dept_salaries
+set zscore = (cur_avg_pay - overall_avg_salary) / overall_std_salary;
+
+select * from avg_dept_salaries;
+
+/*
+In terms of salary, what is the best department right now to work for? 
+*/
+
+select * from avg_dept_salaries
+order by zscore desc;
+-- the best department right now to work is sales with a zscore of .972892
+
+/*
+The worst?
+*/
+-- the worst department right now to work is human resources with a zscore of -.467381
+
+
+
+
+
+
 
 

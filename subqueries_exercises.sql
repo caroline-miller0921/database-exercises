@@ -21,7 +21,8 @@ from employees
 WHERE hire_date = (select hire_date from employees
 where emp_no = '101010') -- Cannot use table in a where clause
 and to_date > NOW();
-						
+	
+				
 /*
 2. Find all the titles ever held by all current employees with the first name Aamod.
 */
@@ -43,7 +44,7 @@ from (
 JOIN titles
 		USING (emp_no)
 WHERE to_date > now()
-group by title; -- in this the subquery is in the derived table
+group by title; -- in this, the subquery is in the derived table
 
 -- OR
 
@@ -55,7 +56,8 @@ WHERE emp_no in
 (	select emp_no from employees 
 	where first_name = 'Aamod'
 )
-AND to_date > now(); -- in this the subquery is in the where clause
+AND to_date > now(); -- in this, the subquery is in the where clause
+
 
 /*
 3. How many people in the employees table are no longer working for the company? Give the answer in a comment in your code.
@@ -64,24 +66,11 @@ select * from employees limit 100;
 select * from dept_emp limit 100;
 
 -- Subquery
-select * from employees 
-	JOIN dept_emp
-		USING (emp_no)
-where to_date < now();
-
+select emp_no
+	from dept_emp
+	where to_date > now()
+;
 -- Outer Query
-select distinct(count(*))
-from 
-	(
-	select * from employees 
-	JOIN dept_emp
-		USING (emp_no)
-	where to_date < now()
-	) as emp_terminated;
--- 91479 WRONG
-
--- OR
-
 select count(emp_no) from employees
 where emp_no not in
 	(
@@ -89,7 +78,7 @@ where emp_no not in
 	from dept_emp
 	where to_date > now()
 	)
-; -- Answern 59900 RIGHT
+; -- Answer 59900
 
 /*
 4. Find all the current department managers that are female. List their names in a comment in your code.
@@ -156,7 +145,7 @@ select max(salary) from salaries
 where to_date > now();
 
 -- Outer Query
-select *
+select COUNT(salary)
 from salaries
 where to_date > now()
 and salary between 
@@ -174,41 +163,70 @@ AND
 	select max(salary) from salaries
 	where to_date > now() -- the current max salary = 158220
 ) 
-order by salary desc
 	;
 
--- 83
+-- There are 83 current salaries are within 1 standard deviation of the current highest salary
 
 select (158220 - 17309.95933634675);
 -- this equals 141315.17171199986
 
--- PERCENTAGE 
+-- PERCENTAGE 		
 
-select  
-((
+	select
+		(select COUNT(salary)
+		from salaries
+		where to_date > now()
+		and salary between 
+		(
+			(
+			select max(salary) from salaries
+			where to_date > now() 
+			) - 
+		(
+			select STDDEV(salary) from salaries
+			where to_date > now())
+		)
+	AND
+		(
+			select max(salary) from salaries
+			where to_date > now() 
+		) 
+		)
+		/ -- end of 83
+		(select count(salary) from salaries
+		where to_date > now())
+	* 100
+	;
+-- The Answer is 0.0029% with ALL salaries
+-- The Answer is 0.0346% with all current salaries
+
+-- Instructor answer:
+select 
+(
 select count(*)
 from salaries
-where salary between 
-(
+where to_date > now()
+and salary > 
 	(
-	select max(salary) from salaries
-	where to_date > now() -- the current max salary = 158220
-	) - -- minus 1 standard deviation
-	(
-	select STDDEV(salary) from salaries) -- 1 standard deviation = 16904.82828800014
-	)
-AND
+	( -- max salary
+    select max(salary)
+	from salaries
+	where to_date > now()
+    )
+    -
+    ( -- one standard deviation 
+    select stddev(salary)
+	from salaries
+	where to_date > now()
+    )
+    )
+)
+/ 
 (
-	select max(salary) from salaries
-	where to_date > now() -- the current max salary = 158220
-) 
-) 
-/
-(select count(*) from salaries))
-* 100
-; 
-
--- .0074%
+select count(*) from salaries where to_date > now()
+) * 100
+;
+-- .0346%
 
 -- BONUS --
 /*
